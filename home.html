@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Moodiary - Home</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="main-app active">
+    <div class="menu-button" id="menu-button">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div id="home-screen">
+      <div class="header">
+        <h1>How are you feeling today?</h1>
+        <p>Don't forget to record your journal entry!</p>
+      </div>
+
+      <div class="content">
+        <div class="recommendations">
+          <h2>Recommended</h2>
+          <div class="mood-categories">
+            <div class="mood-category"><h3>Need to cry?</h3></div>
+            <div class="divider"></div>
+            <div class="mood-category"><h3>Something Upbeat?</h3></div>
+            <div class="divider"></div>
+            <div class="mood-category"><h3>Some chill music?</h3></div>
+            <div class="divider"></div>
+            <div class="mood-category"><h3>Future Energy?</h3></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-illustration">
+        <!-- Insert SVG here -->
+      </div>
+    </div>
+
+    <div class="movies-section" id="movies-screen">
+      <!-- Add movie recommendation HTML here -->
+    </div>
+
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-item" onclick="showHome()">Friends</div>
+      <div class="sidebar-item">Journal</div>
+      <div class="sidebar-item">About Me</div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
