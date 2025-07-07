@@ -14,4 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
       overlay.classList.remove("active");
     });
   }
+  function hideAllScreens() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  
+}
+
 });
