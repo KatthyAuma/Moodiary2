@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Journal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="journal-container">
+    <h2>My Journal</h2>
+    <textarea id="entry" placeholder="Write something..." rows="6"></textarea>
+    <button onclick="saveEntry()">Save Entry</button>
+    <hr />
+    <h3>Previous Entries</h3>
+    <div id="entries"></div>
+  </div>
+
+  <script src="journal.js"></script>
+</body>
+</html>
