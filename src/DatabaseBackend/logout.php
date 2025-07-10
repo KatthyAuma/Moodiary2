@@ -16,7 +16,7 @@ if (ini_get("session.use_cookies")) {
     );
 }
 
-// Optional: clear PHPSESSID cookie
+//  clear PHPSESSID cookie
 if (isset($_COOKIE['PHPSESSID'])) {
     setcookie('PHPSESSID', '', time() - 3600, '/');
 }

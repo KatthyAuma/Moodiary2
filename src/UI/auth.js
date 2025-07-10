@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutBtn.addEventListener("click", () => {
       sessionStorage.removeItem("moodiary_logged_in");
       sessionStorage.removeItem("moodiary_user_email");
-      window.location.href = "src/DatabaseBackend/logout.php"; // redirect to PHP logout script
+      window.location.href = "src/DatabaseBackend/logout.php"; // redirect to PHP logout file
     });
   }
 });
