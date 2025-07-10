@@ -1,43 +1,72 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Signup
-  const signupBtn = document.getElementById("signup-btn");
-  if (signupBtn) {
-    signupBtn.addEventListener("click", () => {
-      const email = document.getElementById("signup-email").value;
-      const password = document.getElementById("signup-password").value;
+  // Signup (index.html)
+  if (window.location.pathname.includes("index.html")) {
+    const signupBtn = document.getElementById("signup-btn");
+    if (signupBtn) {
+      signupBtn.addEventListener("click", () => {
+        const email = document.getElementById("signup-email").value;
+        const password = document.getElementById("signup-password").value;
 
-      if (email && password) {
-        localStorage.setItem("moodiary_user", JSON.stringify({ email, password }));
-        alert("Signup successful!");
-        window.location.href = "signin.html";
-      } else {
-        alert("Please fill in all fields.");
-      }
-    });
+        if (email && password) {
+          fetch("backend/signup.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "success") {
+                alert(data.message);
+                window.location.href = "index.html"; // redirect to signup after successful signup
+              } else {
+                alert("Signup failed: " + data.message);
+              }
+            })
+            .catch((err) => {
+              console.error("Signup error:", err);
+              alert("Something went wrong during signup.");
+            });
+        } else {
+          alert("Please fill in all fields.");
+        }
+      });
+    }
   }
 
-  // Signin
+  // Signin (also index.html for now)
   const signinBtn = document.getElementById("signin-btn");
   if (signinBtn) {
     signinBtn.addEventListener("click", () => {
       const email = document.getElementById("signin-email").value;
       const password = document.getElementById("signin-password").value;
-      const storedUser = JSON.parse(localStorage.getItem("moodiary_user"));
 
-      if (storedUser && email === storedUser.email && password === storedUser.password) {
-        sessionStorage.setItem("moodiary_logged_in", "true");
-        window.location.href = "home.html";
-      } else {
-        alert("Invalid credentials.");
-      }
+      fetch("backend/signin.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "success") {
+            sessionStorage.setItem("moodiary_logged_in", "true");
+            sessionStorage.setItem("moodiary_user_email", email);
+            window.location.href = "home.html";
+          } else {
+            alert("Signin failed: " + data.message);
+          }
+        })
+        .catch((err) => {
+          console.error("Signin error:", err);
+          alert("Something went wrong during signin.");
+        });
     });
   }
 
-  // Protect Home Page
+  // Protect home page
   if (window.location.pathname.includes("home.html")) {
     const isLoggedIn = sessionStorage.getItem("moodiary_logged_in");
     if (!isLoggedIn) {
-      window.location.href = "signin.html";
+      window.location.href = "index.html"; // redirect to signup if not logged in
     }
   }
 
@@ -46,7 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       sessionStorage.removeItem("moodiary_logged_in");
-      window.location.href = "signin.html";
+      sessionStorage.removeItem("moodiary_user_email");
+      window.location.href = "src/DatabaseBackend/logout.php"; // redirect to PHP logout script
     });
   }
 });
