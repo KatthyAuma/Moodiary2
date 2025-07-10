@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="moodjournal.css">
+    <title>Mood and Journals</title>
+</head>
+<body>
+    <form class="form-container" id="moodJournalForm">
+        <h2>How are you feeling today?</h2>
+        <label for="entryDate">Date</label>
+        <input type="date" id="entryDate" name="entryDate" />
+        <label for="mood">Mood</label>
+        <select id="mood" name="mood" >
+          <option value="" disabled selected>Select your mood</option>
+          <option value="very-happy">Very Happy</option>
+          <option value="happy">Happy</option>
+          <option value="neutral">Neutral</option>
+          <option value="sad">Sad</option>
+          <option value="very-sad">Very Sad</option>
+        </select>
+        <label for="journalEntry">Journal Entry</label>
+        <textarea id="journalEntry" name="journalEntry" placeholder="Write your thoughts here..."></textarea>
+        <button type="submit">Submit</button>
+        <p id="formStatus" class="success-message">
+      </form>   
+</body>
+</html>

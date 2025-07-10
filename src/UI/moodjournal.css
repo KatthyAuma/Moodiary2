@@ -1,0 +1,111 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.form-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(255, 176, 59, 0.3);
+    padding: 32px 40px;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    color: #333;
+}
+
+h2 {
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin: 0 0 12px;
+    color: #f68e1e; /* happy warm orange */
+    text-align: center;
+}
+
+label {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    display: block;
+}
+
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #f68e1e;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+    min-height: 56px;
+    background-color: #fffbea;
+}
+
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #faba2e;
+    box-shadow: 0 0 8px rgba(250, 186, 46, 0.5);
+    background-color: #fff9e6;
+}
+
+textarea {
+    min-height: 100px;
+    max-height: 200px;
+}
+
+button {
+    background: linear-gradient(135deg, #fabe2e, #f68e1e);
+    border: none;
+    padding: 14px 0;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #fff;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background 0.3s ease;
+}
+
+button:hover,
+button:focus {
+    background: linear-gradient(135deg, #f6a800, #d87f00);
+    outline: none;
+}
+
+.success-message {
+    color: #3a7d44;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .form-container {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    button {
+        font-size: 1rem;
+    }
+}
