@@ -70,7 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Logout
+  // Logout (home.html)
+  // Ensure the logout button exists before adding the event listener
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {

@@ -21,7 +21,7 @@ if (isset($_COOKIE['PHPSESSID'])) {
     setcookie('PHPSESSID', '', time() - 3600, '/');
 }
 
-// Temporary redirect to signup page (index.html)
+// Temporary redirect to signin page (index.html)
 
 header("Location: ../../signin.html");
 
