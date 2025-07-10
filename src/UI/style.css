@@ -611,3 +611,33 @@ body {
 .main-content {
   padding-left: 0; /* No need to shift content */
 }
+/* JOURNAL */
+.journal-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+textarea {
+  width: 100%;
+  font-size: 16px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+#entries {
+  margin-top: 20px;
+}
+
+.entry {
+  background: #f0f0f0;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-left: 4px solid #007bff;
+}
+
