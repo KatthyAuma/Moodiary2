@@ -3,28 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Moodiary - Track your moods, share vibes, heal together" />
+  <meta name="theme-color" content="#7371fc" />
   <title>Sign In - Moodiary</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="style.css">
-
   <div class="screen auth-container">
     <div class="logo">
       <h1>Moodiary</h1>
-      <p>Track moods,share vibes, heal together.❤️</p>
+      <p>Track moods, share vibes, heal together ❤️</p>
     </div>
-    <img src="images/Catchingup.png" class="bottom-left-img" alt="Moodiary Logo" width="200">
-    <img src="images/Loving.png" class="right-image" alt="Hugging character" />
-
-
+    
     <div class="form-group">
       <label for="signin-email">Email</label>
-      <input type="email" id="signin-email" placeholder="Enter your email" />
+      <input type="email" id="signin-email" placeholder="Enter your email" required />
     </div>
     <div class="form-group">
       <label for="signin-password">Password</label>
-      <input type="password" id="signin-password" placeholder="Enter your password" />
+      <input type="password" id="signin-password" placeholder="Enter your password" required />
     </div>
 
     <button class="auth-button" id="signin-btn">Sign In</button>
@@ -33,6 +33,9 @@
       <span>Don't have an account?</span>
       <a href="index.html">Sign up</a>
     </div>
+    
+    <img src="../images/Catchingup.png" class="bottom-left-img" alt="Moodiary Logo" />
+    <img src="../images/Loving.png" class="right-image" alt="Hugging character" />
   </div>
 
   <script src="auth.js"></script>

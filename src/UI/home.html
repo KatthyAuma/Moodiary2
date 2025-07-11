@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Moodiary - Track your moods, share vibes, heal together" />
+  <meta name="theme-color" content="#d4b8a8" />
   <title>Moodiary - Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -19,96 +24,142 @@
         <p>Don't forget to record your journal entry!</p>
       </div>
 
-      <div class="content">
-        <div class="recommendations">
-          <h2>Recommended</h2>
-          <div class="mood-categories">
-            <div class="mood-category"><h3>Need to cry?</h3>
-            <p>Frank Ocean – “Ivy”
-
-Phoebe Bridgers – “Funeral”
-
-Sufjan Stevens – “Fourth of July”
-
-Adele – “All I Ask”
-
-James Blake – “Retrograde”
-
-Bon Iver – “Skinny Love”
-
-Giveon – “Stuck On You”
-
-Kehlani – “Everything”
-
-</p>
+      <div class="dashboard-container">
+        <!-- Left Column -->
+        <div class="dashboard-column">
+          <!-- User Profile Summary -->
+          <div class="profile-summary">
+            <div class="profile-avatar" id="user-avatar"></div>
+            <div class="profile-info">
+              <h2 id="user-name"></h2>
+              <p id="user-streak"></p>
             </div>
-            <div class="divider"></div>
-            <div class="mood-category"><h3>Something Upbeat?</h3>
-              <p> Robyn – “Dancing On My Own”
-
-Lorde – “Supercut”
-
-The 1975 – “It’s Not Living (If It’s Not With You)”
-
-Bleachers – “Don’t Take the Money”
-
-Christine and the Queens – “People, I’ve been sad”
-
-MUNA – “Silk Chiffon” (feat. Phoebe Bridgers)
-
-Taylor Swift – “Cruel Summer”</p>
+            <div class="profile-mood" id="current-mood">
+              <span class="mood-emoji"></span>
+              <span class="mood-text"></span>
             </div>
-            <div class="divider"></div>
-            <div class="mood-category"><h3>Some chill music?</h3>
-              <p>Joji – “Like You Do”
-
-Kali Uchis – “Melting”
-
-Daniel Caesar – “Streetcar”
-
-Snoh Aalegra – “I Want You Around”
-
-HONNE – “no song without you”
-
-Lana Del Rey – “Cinnamon Girl”
-
-Tom Misch – “Movie”</p>
+          </div>
+          
+          <!-- Quick Journal Entry -->
+          <div class="quick-journal">
+            <h3>Quick Journal Entry</h3>
+            <div class="mood-tags">
+              <div class="mood-tag" data-mood-id="1" data-mood="Happy">
+                <span class="mood-tag-emoji">😊</span>Happy
+              </div>
+              <div class="mood-tag" data-mood-id="2" data-mood="Sad">
+                <span class="mood-tag-emoji">😢</span>Sad
+              </div>
+              <div class="mood-tag" data-mood-id="3" data-mood="Angry">
+                <span class="mood-tag-emoji">😠</span>Angry
+              </div>
+              <div class="mood-tag" data-mood-id="4" data-mood="Anxious">
+                <span class="mood-tag-emoji">😰</span>Anxious
+              </div>
+              <div class="mood-tag" data-mood-id="5" data-mood="Calm">
+                <span class="mood-tag-emoji">😌</span>Calm
+              </div>
+              <div class="mood-tag" data-mood-id="6" data-mood="Excited">
+                <span class="mood-tag-emoji">🤩</span>Excited
+              </div>
+              <div class="mood-tag" data-mood-id="7" data-mood="Tired">
+                <span class="mood-tag-emoji">😴</span>Tired
+              </div>
+              <div class="mood-tag" data-mood-id="8" data-mood="Grateful">
+                <span class="mood-tag-emoji">🙏</span>Grateful
+              </div>
             </div>
-            <div class="divider"></div>
-            <div class="mood-category"><h3>Future Energy?</h3>
-              <p>“Codeine Crazy” – haunting, vulnerable
-
-“Throw Away” – raw pain over love
-
-“Turn On the Lights” – emotional Future classic
-
-“Perkys Calling” – emotional struggle, introspection
-
-“Hard To Choose One” – melancholy but cold
-
-“My Collection” – toxic and reflective
-
-“I Won” (feat. Kanye West) – softer Future moment</p>
+            <textarea placeholder="How are you feeling today?" class="quick-journal-input"></textarea>
+            <div class="quick-journal-actions">
+              <label>
+                <input type="checkbox" id="quick-journal-public"> 
+                Share with friends
+              </label>
+              <button class="quick-journal-submit">Save</button>
+            </div>
+          </div>
+          
+          <!-- Mood Insights -->
+          <div class="mood-insights">
+            <h3>Your Mood Trends</h3>
+            <div class="mood-chart">
+              <div class="mood-chart-placeholder">
+                <p>Track your moods to see trends over time</p>
+                <a href="journal.html" class="btn-small">View All</a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        
+        <!-- Middle Column -->
+        <div class="dashboard-column">
+          <!-- Feed Section -->
+          <div class="feed-section">
+            <h2>Friend Activity</h2>
+            <!-- Feed content will be loaded dynamically by JavaScript -->
+          </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="dashboard-column">
+          <!-- Friends Section -->
+          <div class="friends-section">
+            <h2>Friends</h2>
+            <div class="friends-search">
+              <input type="text" placeholder="Search for friends..." id="friends-search-input" />
+              <button id="friends-search-btn">Search</button>
+            </div>
+            
+            <div class="section-tabs">
+              <div class="section-tab active" data-tab="friends-list">My Friends</div>
+              <div class="section-tab" data-tab="friend-requests">Requests <span class="badge" id="request-count">0</span></div>
+              <div class="section-tab" data-tab="friend-search">Find Friends</div>
+            </div>
+            
+            <div class="tab-content active" id="friends-list">
+              <div class="friends-list">
+                <!-- Friends list will be loaded dynamically by JavaScript -->
+              </div>
+            </div>
+            
+            <div class="tab-content" id="friend-requests">
+              <!-- Friend requests will be loaded dynamically by JavaScript -->
+            </div>
+            
+            <div class="tab-content" id="friend-search">
+              <div class="friends-search">
+                <input type="text" placeholder="Search by name or email..." id="find-friends-input" />
+                <button id="find-friends-btn">Search</button>
+              </div>
+              <div class="search-results">
+                <!-- Search results will be loaded dynamically by JavaScript -->
+              </div>
+            </div>
+          </div>
 
-      <div class="home-illustration">
-        <!-- Insert SVG here -->
+          <!-- Recommendations Section -->
+          <div class="recommendations">
+            <h2>Recommended for You</h2>
+            <!-- Recommendations will be loaded dynamically by JavaScript -->
+          </div>
+        </div>
       </div>
-    </div>
-
-    <div class="movies-section" id="movies-screen">
-      <!-- Add movie recommendation HTML here -->
     </div>
 
     <div class="sidebar" id="sidebar">
-      <div class="sidebar-item" onclick="showHome()">Friends
+      <div class="sidebar-item">
+        <a href="home.html">Home</a>
+      </div>
+      <div class="sidebar-item">
         <a href="message.html">Friends</a>
       </div>
-      <div class="sidebar-item">Journal</div>
-      <div class="sidebar-item">About Me</div>
+      <div class="sidebar-item">
+        <a href="journal.html">Journal</a>
+      </div>
+      <div class="sidebar-item">
+        <a href="#">Settings</a>
+      </div>
+      <div class="sidebar-item" id="logout-btn">Logout</div>
     </div>
 
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -116,6 +167,29 @@ Tom Misch – “Movie”</p>
   </div>
 
   <script src="sidebar.js"></script>
-  <script src="app.js"></script>
+  <script src="dashboard.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tab functionality
+      const tabs = document.querySelectorAll('.section-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          // Remove active class from all tabs
+          tabs.forEach(t => t.classList.remove('active'));
+          // Add active class to clicked tab
+          this.classList.add('active');
+          
+          // Hide all tab content
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          // Show corresponding tab content
+          const tabId = this.getAttribute('data-tab');
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+    });
+  </script>
 </body>
 </html>
