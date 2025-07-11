@@ -7,7 +7,7 @@ $isLoggedIn = isset($_SESSION['user_id']) && isset($_SESSION['logged_in']) && $_
 // Get user data from session
 $username = $isLoggedIn ? $_SESSION['username'] : '';
 $fullName = $isLoggedIn ? $_SESSION['full_name'] : '';
-$profileImage = $isLoggedIn ? ($_SESSION['profile_image'] ?: 'default.png') : 'default.png';
+$profileImage = $isLoggedIn ? (isset($_SESSION['profile_image']) && $_SESSION['profile_image'] ? $_SESSION['profile_image'] : 'default.png') : 'default.png';
 $userRoles = $isLoggedIn ? $_SESSION['roles'] : [];
 
 // Check if user has admin role

@@ -1,29 +1,30 @@
 <?php
 // Include the header
-include_once('../Database&Backend/header.php');
+include_once('header.php');
 
 // Set page title
 $pageTitle = "Messages";
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Moodiary - Track your moods, share vibes, heal together" />
   <meta name="theme-color" content="#d4b8a8" />
   <title>Moodiary - Messages</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
   <style>
     .messages-container {
       display: flex;
       height: calc(100vh - 100px);
       margin: 20px;
     }
-    
+
     .contacts-list {
       width: 300px;
       background-color: #f5f5f5;
@@ -31,22 +32,22 @@ $pageTitle = "Messages";
       overflow-y: auto;
       border-right: 1px solid #ddd;
     }
-    
+
     .contacts-header {
       padding: 15px;
       border-bottom: 1px solid #ddd;
     }
-    
+
     .contacts-header h2 {
       margin: 0;
       font-size: 1.2rem;
     }
-    
+
     .contacts-search {
       padding: 10px 15px;
       border-bottom: 1px solid #ddd;
     }
-    
+
     .contacts-search input {
       width: 100%;
       padding: 8px 12px;
@@ -54,7 +55,7 @@ $pageTitle = "Messages";
       border-radius: 20px;
       font-size: 0.9rem;
     }
-    
+
     .contact-item {
       display: flex;
       align-items: center;
@@ -62,8 +63,10 @@ $pageTitle = "Messages";
       cursor: pointer;
       transition: background-color 0.2s;
       border-bottom: 1px solid #eee;
-      position: relative; /* For unread indicator */
+      position: relative;
+      /* For unread indicator */
     }
+
     .unread-indicator {
       position: absolute;
       right: 18px;
@@ -79,17 +82,18 @@ $pageTitle = "Messages";
       justify-content: center;
       z-index: 2;
       font-weight: bold;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     }
+
     .contact-item:hover {
       background-color: #e9e9e9;
     }
-    
+
     .contact-item.active {
       background-color: #d4b8a8;
       color: white;
     }
-    
+
     .contact-avatar {
       width: 40px;
       height: 40px;
@@ -102,25 +106,25 @@ $pageTitle = "Messages";
       font-weight: bold;
       color: white;
     }
-    
+
     .contact-info {
       flex: 1;
     }
-    
+
     .contact-name {
       font-weight: 500;
       margin-bottom: 3px;
     }
-    
+
     .contact-status {
       font-size: 0.8rem;
       color: #666;
     }
-    
+
     .contact-item.active .contact-status {
       color: #f5f5f5;
     }
-    
+
     .relationship-badge {
       font-size: 0.7rem;
       padding: 2px 6px;
@@ -128,27 +132,27 @@ $pageTitle = "Messages";
       margin-left: 5px;
       text-transform: capitalize;
     }
-    
+
     .relationship-friend {
       background-color: #4caf50;
       color: white;
     }
-    
+
     .relationship-mentor {
       background-color: #2196f3;
       color: white;
     }
-    
+
     .relationship-counsellor {
       background-color: #9c27b0;
       color: white;
     }
-    
+
     .relationship-family {
       background-color: #ff9800;
       color: white;
     }
-    
+
     .chat-area {
       flex: 1;
       display: flex;
@@ -156,19 +160,19 @@ $pageTitle = "Messages";
       background-color: #fff;
       border-radius: 0 10px 10px 0;
     }
-    
+
     .chat-header {
       padding: 15px;
       border-bottom: 1px solid #ddd;
       display: flex;
       align-items: center;
     }
-    
+
     .chat-header h2 {
       margin: 0;
       font-size: 1.2rem;
     }
-    
+
     .chat-messages {
       flex: 1;
       padding: 15px;
@@ -176,7 +180,7 @@ $pageTitle = "Messages";
       display: flex;
       flex-direction: column;
     }
-    
+
     .message {
       max-width: 70%;
       margin-bottom: 15px;
@@ -184,36 +188,36 @@ $pageTitle = "Messages";
       border-radius: 10px;
       position: relative;
     }
-    
+
     .message-sent {
       align-self: flex-end;
       background-color: #fff;
       color: #222;
       border-bottom-right-radius: 0;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     }
-    
+
     .message-received {
       align-self: flex-start;
       background-color: #f1f1f1;
       border-bottom-left-radius: 0;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     }
-    
+
     .message-time {
       font-size: 0.7rem;
       opacity: 0.7;
       margin-top: 5px;
       text-align: right;
     }
-    
+
     .message-input {
       padding: 15px;
       border-top: 1px solid #ddd;
       display: flex;
       align-items: center;
     }
-    
+
     .message-input textarea {
       flex: 1;
       padding: 10px 15px;
@@ -224,7 +228,7 @@ $pageTitle = "Messages";
       font-family: inherit;
       margin-right: 10px;
     }
-    
+
     .message-input button {
       padding: 8px 15px;
       background-color: #d4b8a8;
@@ -234,16 +238,16 @@ $pageTitle = "Messages";
       cursor: pointer;
       font-weight: 500;
     }
-    
+
     .message-input button:hover {
       background-color: #c4a898;
     }
-    
+
     .message-input button:disabled {
       background-color: #ccc;
       cursor: not-allowed;
     }
-    
+
     .empty-state {
       display: flex;
       flex-direction: column;
@@ -254,15 +258,15 @@ $pageTitle = "Messages";
       text-align: center;
       padding: 20px;
     }
-    
+
     .empty-state p {
       margin: 10px 0;
     }
-    
+
     .empty-state .btn-primary {
       margin-top: 15px;
     }
-    
+
     .loading {
       display: flex;
       align-items: center;
@@ -270,7 +274,7 @@ $pageTitle = "Messages";
       height: 100%;
       color: #888;
     }
-    
+
     .reply-to {
       background-color: #f5f5f5;
       padding: 10px;
@@ -279,17 +283,19 @@ $pageTitle = "Messages";
       border-left: 3px solid #d4b8a8;
       font-size: 0.9rem;
     }
-    
+
     .reply-to .close {
       float: right;
       cursor: pointer;
       font-weight: bold;
     }
+
     .message-content-row {
       display: flex;
       align-items: flex-end;
       gap: 6px;
     }
+
     .reply-arrow-btn {
       background: none;
       border: none;
@@ -301,37 +307,45 @@ $pageTitle = "Messages";
       color: #d4b8a8;
       transition: color 0.2s;
     }
+
     .reply-arrow-btn:hover {
       color: #b08a6b;
     }
+
     .message-sent .reply-arrow-btn {
       order: -1;
       margin-left: 0;
       margin-right: 8px;
     }
+
     .message-received .reply-arrow-btn {
       order: 1;
       margin-left: 8px;
       margin-right: 0;
     }
+
     .relationship-friend.message-received {
       background-color: #e8f5e9;
       color: #222;
     }
+
     .relationship-mentor.message-received {
       background-color: #e3f2fd;
       color: #222;
     }
+
     .relationship-counsellor.message-received {
       background-color: #f3e5f5;
       color: #222;
     }
+
     .relationship-family.message-received {
       background-color: #fff3e0;
       color: #222;
     }
   </style>
 </head>
+
 <body>
   <div class="main-app active">
     <div class="menu-button" id="menu-button">
@@ -352,7 +366,7 @@ $pageTitle = "Messages";
           <div class="loading">Loading contacts...</div>
         </div>
       </div>
-      
+
       <!-- Chat Area -->
       <div class="chat-area">
         <div id="empty-chat" class="empty-state">
@@ -360,7 +374,7 @@ $pageTitle = "Messages";
           <p>Or find new friends to connect with</p>
           <button class="btn-primary" id="find-friends-btn">Find Friends</button>
         </div>
-        
+
         <div id="active-chat" style="display: none; height: 100%; flex-direction: column;">
           <div class="chat-header">
             <div class="contact-avatar" id="chat-avatar"></div>
@@ -369,19 +383,19 @@ $pageTitle = "Messages";
               <div id="chat-relationship"></div>
             </div>
           </div>
-          
+
           <div class="chat-messages" id="chat-messages">
             <!-- Messages will be loaded dynamically -->
-      </div>
+          </div>
 
-      <div class="message-input">
+          <div class="message-input">
             <textarea id="message-text" placeholder="Type a message..."></textarea>
             <button id="send-message">Send</button>
           </div>
         </div>
       </div>
     </div>
-    
+
     <div class="sidebar" id="sidebar">
       <div class="sidebar-item">
         <a href="home.php">Home</a>
@@ -394,10 +408,10 @@ $pageTitle = "Messages";
       </div>
       <div class="sidebar-item" id="logout-btn">Logout</div>
     </div>
-    
+
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
   </div>
-  
+
   <script src="auth.js"></script>
   <script src="sidebar.js"></script>
   <script>
@@ -421,7 +435,7 @@ $pageTitle = "Messages";
           console.error('Error checking session:', error);
           window.location.href = 'signin.html';
         });
-      
+
       function initMessages() {
         const contactsContainer = document.getElementById('contacts-container');
         const contactSearch = document.getElementById('contact-search');
@@ -434,19 +448,19 @@ $pageTitle = "Messages";
         const messageText = document.getElementById('message-text');
         const sendButton = document.getElementById('send-message');
         const findFriendsBtn = document.getElementById('find-friends-btn');
-        
+
         let currentUser = null;
         let currentChat = null;
         let replyingTo = null;
-        
+
         // Load contacts
         loadContacts();
-        
+
         // Search contacts
         contactSearch.addEventListener('input', function() {
           const searchTerm = this.value.toLowerCase().trim();
           const contacts = document.querySelectorAll('.contact-item');
-          
+
           contacts.forEach(contact => {
             const name = contact.querySelector('.contact-name').textContent.toLowerCase();
             if (name.includes(searchTerm) || searchTerm === '') {
@@ -456,14 +470,14 @@ $pageTitle = "Messages";
             }
           });
         });
-        
+
         // Find friends button
         if (findFriendsBtn) {
           findFriendsBtn.addEventListener('click', function() {
             window.location.href = 'home.php';
           });
         }
-        
+
         // Send message
         sendButton.addEventListener('click', sendMessage);
         messageText.addEventListener('keypress', function(e) {
@@ -472,7 +486,7 @@ $pageTitle = "Messages";
             sendMessage();
           }
         });
-        
+
         // Check for reply_to_id in URL
         const urlParams = new URLSearchParams(window.location.search);
         const replyToId = urlParams.get('reply_to_id');
@@ -481,10 +495,13 @@ $pageTitle = "Messages";
           const entryContent = decodeURIComponent(urlParams.get('entry_content') || '');
           const entryMood = decodeURIComponent(urlParams.get('entry_mood') || '');
           const entryEmoji = decodeURIComponent(urlParams.get('entry_emoji') || '');
-          replyingTo = { message_id: replyToId, content: `${entryEmoji ? entryEmoji + ' ' : ''}${entryMood ? entryMood : ''}\n${entryContent}` };
+          replyingTo = {
+            message_id: replyToId,
+            content: `${entryEmoji ? entryEmoji + ' ' : ''}${entryMood ? entryMood : ''}\n${entryContent}`
+          };
           showReplyTo(`${entryEmoji ? entryEmoji + ' ' : ''}${entryMood ? entryMood : ''}\n${entryContent}`);
         }
-        
+
         function sendMessage() {
           const text = messageText.value.trim();
           if (!text || !currentChat) return;
@@ -495,7 +512,9 @@ $pageTitle = "Messages";
           const messageData = {
             receiver_id: currentChat.user_id,
             content: text,
-            reply_to: replyingTo && !replyToJournalId ? { message_id: replyingTo.message_id } : null,
+            reply_to: replyingTo && !replyToJournalId ? {
+              message_id: replyingTo.message_id
+            } : null,
             reply_to_journal_id: replyToJournalId || null
           };
           const now = new Date();
@@ -506,7 +525,10 @@ $pageTitle = "Messages";
             content: text,
             created_at: now.toISOString(),
             is_read: false,
-            reply_to: replyingTo && !replyToJournalId ? { message_id: replyingTo.message_id, content: replyingTo.content } : null,
+            reply_to: replyingTo && !replyToJournalId ? {
+              message_id: replyingTo.message_id,
+              content: replyingTo.content
+            } : null,
             reply_to_journal: replyToJournalId ? {
               entry_id: replyToJournalId,
               content: urlParams.get('entry_content') || '',
@@ -525,39 +547,39 @@ $pageTitle = "Messages";
           url.searchParams.delete('entry_emoji');
           window.history.replaceState({}, document.title, url.pathname + url.search);
           fetch('../Database&Backend/messages_api.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(messageData)
-          })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(data => {
-            sendButton.disabled = false;
-            if (data.status === 'success') {
-              const tempElement = document.querySelector(`[data-message-id="temp_${tempMessage.message_id}"]`);
-              if (tempElement) {
-                tempElement.setAttribute('data-message-id', data.data.message_id);
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(messageData)
+            })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
               }
-            } else {
-              showNotification(data.message || 'Error sending message', 'error');
-            }
-          })
-          .catch(error => {
-            console.error('Error sending message:', error);
-            showNotification('Error sending message', 'error');
-            sendButton.disabled = false;
-          });
+              return response.json();
+            })
+            .then(data => {
+              sendButton.disabled = false;
+              if (data.status === 'success') {
+                const tempElement = document.querySelector(`[data-message-id="temp_${tempMessage.message_id}"]`);
+                if (tempElement) {
+                  tempElement.setAttribute('data-message-id', data.data.message_id);
+                }
+              } else {
+                showNotification(data.message || 'Error sending message', 'error');
+              }
+            })
+            .catch(error => {
+              console.error('Error sending message:', error);
+              showNotification('Error sending message', 'error');
+              sendButton.disabled = false;
+            });
         }
-        
+
         function loadContacts() {
           contactsContainer.innerHTML = '<div class="loading">Loading contacts...</div>';
-          
+
           // Get current user first
           fetch('../Database&Backend/check_session.php')
             .then(response => {
@@ -573,7 +595,7 @@ $pageTitle = "Messages";
                   email: data.email,
                   profile_image: data.profile_image
                 };
-                
+
                 // Now fetch friends
                 return fetch('../Database&Backend/friends_api.php');
               } else {
@@ -587,26 +609,29 @@ $pageTitle = "Messages";
             .then(data => {
               if (data.status === 'success' && data.data && data.data.length > 0) {
                 contactsContainer.innerHTML = '';
-                
+
                 data.data.forEach(friend => {
                   const contactElement = createContactElement(friend);
                   contactsContainer.appendChild(contactElement);
                 });
-                
+
                 // Check if URL has a user parameter
                 const urlParams = new URLSearchParams(window.location.search);
                 const userParam = urlParams.get('user');
-                
+
                 if (userParam) {
                   // Find the contact with matching username or user_id
-                  const contact = data.data.find(f => 
+                  const contact = data.data.find(f =>
                     f.username === userParam || f.user_id == userParam // allow numeric match
                   );
                   if (contact) {
                     const contactElement = document.querySelector(`[data-user-id="${contact.user_id}"]`);
                     if (contactElement) {
                       // Scroll into view and click
-                      contactElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+                      contactElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                      });
                       setTimeout(() => contactElement.click(), 100);
                     }
                   }
@@ -654,7 +679,7 @@ $pageTitle = "Messages";
                     <button class="btn-primary" id="find-friends-empty">Find Friends</button>
                   </div>
                 `;
-                
+
                 const findFriendsEmpty = document.getElementById('find-friends-empty');
                 if (findFriendsEmpty) {
                   findFriendsEmpty.addEventListener('click', function() {
@@ -672,12 +697,12 @@ $pageTitle = "Messages";
               `;
             });
         }
-        
+
         function createContactElement(friend) {
           const contactElement = document.createElement('div');
           contactElement.className = 'contact-item';
           contactElement.setAttribute('data-user-id', friend.user_id);
-          
+
           // Generate initials for avatar
           let initials = 'U';
           if (friend.full_name) {
@@ -689,11 +714,11 @@ $pageTitle = "Messages";
           } else if (friend.username) {
             initials = friend.username.substring(0, 2).toUpperCase();
           }
-          
+
           // Create relationship badge
           const relationshipType = friend.relationship_type || 'friend';
           const relationshipBadge = `<span class="relationship-badge relationship-${relationshipType}">${relationshipType}</span>`;
-          
+
           // Create HTML structure
           contactElement.innerHTML = `
             <div class="contact-avatar">${initials}</div>
@@ -704,7 +729,7 @@ $pageTitle = "Messages";
               </div>
             </div>
           `;
-          
+
           // Unread indicator
           const unreadCount = getUnreadCount(friend.user_id);
           if (unreadCount > 0) {
@@ -720,24 +745,24 @@ $pageTitle = "Messages";
             document.querySelectorAll('.contact-item').forEach(item => {
               item.classList.remove('active');
             });
-            
+
             // Add active class to clicked contact
             this.classList.add('active');
-            
+
             // Show chat area
             emptyChat.style.display = 'none';
             activeChat.style.display = 'flex';
-            
+
             // Set current chat
             currentChat = friend;
-            
+
             // Update chat header
             chatAvatar.textContent = initials;
             chatName.textContent = friend.full_name || friend.username;
-            
+
             // Set relationship badge
             chatRelationship.innerHTML = relationshipBadge;
-            
+
             // Load messages
             loadMessages(friend.user_id);
             // Remove unread indicator on open
@@ -745,13 +770,13 @@ $pageTitle = "Messages";
             const unreadEl = this.querySelector('.unread-indicator');
             if (unreadEl) unreadEl.remove();
           });
-          
+
           return contactElement;
         }
-        
+
         function loadMessages(friendId) {
           chatMessages.innerHTML = '<div class="loading">Loading messages...</div>';
-          
+
           fetch(`../Database&Backend/messages_api.php?friend_id=${friendId}`)
             .then(response => {
               if (!response.ok) throw new Error('Network response was not ok');
@@ -766,10 +791,10 @@ $pageTitle = "Messages";
                   if (!message.is_read && message.sender_id !== currentUser.user_id) unread++;
                 });
                 setUnreadCount(friendId, unread);
-                
+
                 // Scroll to bottom
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-                
+
                 // Mark messages as read
                 markMessagesAsRead(friendId);
               } else {
@@ -791,7 +816,7 @@ $pageTitle = "Messages";
               `;
             });
         }
-        
+
         function addMessageToChat(message) {
           const messageElement = document.createElement('div');
           messageElement.className = 'message';
@@ -804,7 +829,10 @@ $pageTitle = "Messages";
           }
           // Format date
           const date = new Date(message.created_at);
-          const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const formattedTime = date.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
           const formattedDate = date.toLocaleDateString();
           const today = new Date().toLocaleDateString();
           const displayDate = formattedDate === today ? formattedTime : `${formattedDate} ${formattedTime}`;
@@ -827,7 +855,11 @@ $pageTitle = "Messages";
           if (message.reply_to_journal) {
             let ref = message.reply_to_journal;
             if (typeof ref === 'string') {
-              try { ref = JSON.parse(ref); } catch (e) { ref = null; }
+              try {
+                ref = JSON.parse(ref);
+              } catch (e) {
+                ref = null;
+              }
             }
             if (ref && ref.content) {
               replyHtml = `
@@ -886,38 +918,38 @@ $pageTitle = "Messages";
           chatMessages.appendChild(messageElement);
           chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-        
+
         function showReplyTo(content) {
           // Remove existing reply-to if any
           const existingReplyTo = document.querySelector('.reply-to');
           if (existingReplyTo) {
             existingReplyTo.remove();
           }
-          
+
           // Create reply-to element
           const replyToElement = document.createElement('div');
           replyToElement.className = 'reply-to';
-          
+
           // Truncate content if too long
           const truncatedContent = content.length > 50 ? content.substring(0, 50) + '...' : content;
-          
+
           replyToElement.innerHTML = `
             <span class="close">&times;</span>
             <strong>Replying to:</strong> ${truncatedContent}
           `;
-          
+
           // Add close button functionality
           replyToElement.querySelector('.close').addEventListener('click', clearReplyTo);
-          
+
           // Insert before message input
           const messageInput = document.querySelector('.message-input');
           messageInput.insertBefore(replyToElement, messageInput.firstChild);
-          
+
           // Focus on message input
           messageText.focus();
           persistReplyReference();
         }
-        
+
         function clearReplyTo() {
           replyingTo = null;
           const replyToElement = document.querySelector('.reply-to');
@@ -926,27 +958,27 @@ $pageTitle = "Messages";
           }
           persistReplyReference();
         }
-        
+
         function markMessagesAsRead(friendId) {
           fetch(`../Database&Backend/messages_api.php?mark_read=${friendId}`, {
-            method: 'POST'
-          })
-          .then(response => response.json())
-          .catch(error => {
-            console.error('Error marking messages as read:', error);
-          });
+              method: 'POST'
+            })
+            .then(response => response.json())
+            .catch(error => {
+              console.error('Error marking messages as read:', error);
+            });
         }
-        
+
         // Show notification
         function showNotification(message, type = 'error') {
           const notificationEl = document.createElement('div');
           notificationEl.className = `notification ${type}`;
           notificationEl.textContent = message;
           document.body.appendChild(notificationEl);
-          
+
           setTimeout(() => {
             notificationEl.classList.add('show');
-            
+
             setTimeout(() => {
               notificationEl.classList.remove('show');
               setTimeout(() => notificationEl.remove(), 300);
@@ -959,6 +991,7 @@ $pageTitle = "Messages";
           const unread = localStorage.getItem('unread_' + userId);
           return unread ? parseInt(unread, 10) : 0;
         }
+
         function setUnreadCount(userId, count) {
           localStorage.setItem('unread_' + userId, count);
         }
@@ -979,7 +1012,9 @@ $pageTitle = "Messages";
               const obj = JSON.parse(ref);
               replyingTo = obj;
               showReplyTo(obj.content);
-            } catch (e) { replyingTo = null; }
+            } catch (e) {
+              replyingTo = null;
+            }
           }
         }
         // Call restore on load
@@ -988,4 +1023,5 @@ $pageTitle = "Messages";
     });
   </script>
 </body>
+
 </html>

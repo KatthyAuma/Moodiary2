@@ -188,5 +188,4 @@ include_once('footer.php');
   const isMentor = <?php echo $isMentor ? 'true' : 'false'; ?>;
   const isCounsellor = <?php echo $isCounsellor ? 'true' : 'false'; ?>;
 </script>
-<script src="sidebar.js"></script>
 <script src="dashboard.js"></script>

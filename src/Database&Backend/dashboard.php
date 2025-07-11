@@ -44,7 +44,7 @@ $role = $_SESSION['role'] ?? 'guest';
         </ul>
     <?php else: ?>
         <h2>Guest View</h2>
-        <p>Please <a href="login.php">Login</a> to access your dashboard.</p>
+        <p>Please <a href="login.html">Login</a> to access your dashboard.</p>
     <?php endif; ?>
 </body>
 </html>

@@ -1,36 +1,38 @@
 <?php
 // Include the header
-include_once('../Database&Backend/header.php');
+include_once('header.php');
 
 // Set page title
 $pageTitle = "Journal";
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Moodiary - Track your moods, share vibes, heal together" />
   <meta name="theme-color" content="#d4b8a8" />
   <title>Moodiary - Journal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="main-app active">
     <div class="menu-button" id="menu-button">
       <span></span><span></span><span></span>
     </div>
-    
+
     <div class="journal-page">
       <h1>Your Journal</h1>
-      
+
       <div class="journal-form">
         <h2>New Entry</h2>
         <h3>How are you feeling today?</h3>
-        
+
         <div class="mood-tags">
           <div class="mood-tag" data-mood="1">
             <span class="mood-tag-emoji">😊</span>Happy
@@ -57,9 +59,9 @@ $pageTitle = "Journal";
             <span class="mood-tag-emoji">🙏</span>Grateful
           </div>
         </div>
-        
+
         <textarea id="journal-content" placeholder="Write about your day and how you're feeling..."></textarea>
-        
+
         <div class="form-actions">
           <label class="checkbox-label">
             <input type="checkbox" id="journal-public">
@@ -68,7 +70,7 @@ $pageTitle = "Journal";
           <button id="journal-submit" class="btn-primary">Save Entry</button>
         </div>
       </div>
-      
+
       <div class="journal-history">
         <h2>Your Journal History</h2>
         <div id="journal-entries" class="journal-entries">
@@ -76,7 +78,7 @@ $pageTitle = "Journal";
         </div>
       </div>
     </div>
-    
+
     <div class="sidebar" id="sidebar">
       <div class="sidebar-item">
         <a href="home.php">Home</a>
@@ -89,10 +91,10 @@ $pageTitle = "Journal";
       </div>
       <div class="sidebar-item" id="logout-btn">Logout</div>
     </div>
-    
+
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
   </div>
-  
+
   <script src="auth.js"></script>
   <script src="sidebar.js"></script>
   <script>
@@ -116,12 +118,12 @@ $pageTitle = "Journal";
           console.error('Error checking session:', error);
           window.location.href = 'signin.html';
         });
-      
+
       function initJournal() {
         // Select mood tags
         const moodTags = document.querySelectorAll('.mood-tag');
         let selectedMood = null;
-        
+
         moodTags.forEach(tag => {
           tag.addEventListener('click', function() {
             moodTags.forEach(t => t.classList.remove('active'));
@@ -129,85 +131,85 @@ $pageTitle = "Journal";
             selectedMood = this.dataset.mood;
           });
         });
-        
+
         // Save journal entry
         const saveButton = document.getElementById('journal-submit');
         const journalText = document.getElementById('journal-content');
         const journalPublic = document.getElementById('journal-public');
-        
+
         saveButton.addEventListener('click', function(e) {
           e.preventDefault();
-          
+
           if (!selectedMood) {
             showNotification('Please select a mood', 'error');
             return;
           }
-          
+
           if (!journalText.value.trim()) {
             showNotification('Please write something in your journal', 'error');
             return;
           }
-          
+
           // Disable button while saving
           saveButton.disabled = true;
           saveButton.innerHTML = '<span class="spinner"></span> Saving...';
-          
+
           // Create entry data
           const entryData = {
             mood_id: selectedMood,
             content: journalText.value.trim(),
             is_public: journalPublic.checked
           };
-          
+
           // Send to server
           fetch('../Database&Backend/journal_api.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(entryData)
-          })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(data => {
-            // Reset button
-            saveButton.disabled = false;
-            saveButton.textContent = 'Save Entry';
-            
-            if (data.status === 'success') {
-              showNotification('Journal entry saved!', 'success');
-              journalText.value = '';
-              moodTags.forEach(t => t.classList.remove('active'));
-              journalPublic.checked = false;
-              selectedMood = null;
-              
-              // Refresh entries
-              loadJournalEntries();
-            } else {
-              showNotification(data.message || 'Error saving journal entry', 'error');
-            }
-          })
-          .catch(error => {
-            console.error('Error saving journal entry:', error);
-            showNotification('Error saving journal entry', 'error');
-            
-            // Reset button
-            saveButton.disabled = false;
-            saveButton.textContent = 'Save Entry';
-          });
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(entryData)
+            })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.json();
+            })
+            .then(data => {
+              // Reset button
+              saveButton.disabled = false;
+              saveButton.textContent = 'Save Entry';
+
+              if (data.status === 'success') {
+                showNotification('Journal entry saved!', 'success');
+                journalText.value = '';
+                moodTags.forEach(t => t.classList.remove('active'));
+                journalPublic.checked = false;
+                selectedMood = null;
+
+                // Refresh entries
+                loadJournalEntries();
+              } else {
+                showNotification(data.message || 'Error saving journal entry', 'error');
+              }
+            })
+            .catch(error => {
+              console.error('Error saving journal entry:', error);
+              showNotification('Error saving journal entry', 'error');
+
+              // Reset button
+              saveButton.disabled = false;
+              saveButton.textContent = 'Save Entry';
+            });
         });
-        
+
         // Load journal entries
         loadJournalEntries();
-        
+
         function loadJournalEntries() {
           const entriesContainer = document.getElementById('journal-entries');
           entriesContainer.innerHTML = '<div class="loading">Loading your entries...</div>';
-          
+
           fetch('../Database&Backend/journal_api.php')
             .then(response => {
               if (!response.ok) {
@@ -218,7 +220,7 @@ $pageTitle = "Journal";
             .then(data => {
               if (data.status === 'success' && data.data && data.data.entries && data.data.entries.length > 0) {
                 entriesContainer.innerHTML = '';
-                
+
                 data.data.entries.forEach(entry => {
                   const entryElement = createEntryElement(entry);
                   entriesContainer.appendChild(entryElement);
@@ -241,11 +243,11 @@ $pageTitle = "Journal";
               `;
             });
         }
-        
+
         function createEntryElement(entry) {
           const entryElement = document.createElement('div');
           entryElement.className = 'journal-entry';
-          
+
           // Format date
           const date = new Date(entry.created_at);
           const formattedDate = date.toLocaleDateString('en-US', {
@@ -255,7 +257,7 @@ $pageTitle = "Journal";
             hour: '2-digit',
             minute: '2-digit'
           });
-          
+
           entryElement.innerHTML = `
             <div class="entry-header">
               <span class="entry-date">${formattedDate}</span>
@@ -268,20 +270,20 @@ $pageTitle = "Journal";
               <span class="entry-visibility">${entry.is_public ? 'Shared with friends' : 'Private'}</span>
             </div>
           `;
-          
+
           return entryElement;
         }
-        
+
         // Show notification
         function showNotification(message, type = 'error') {
           const notificationEl = document.createElement('div');
           notificationEl.className = `notification ${type}`;
           notificationEl.textContent = message;
           document.body.appendChild(notificationEl);
-          
+
           setTimeout(() => {
             notificationEl.classList.add('show');
-            
+
             setTimeout(() => {
               notificationEl.classList.remove('show');
               setTimeout(() => notificationEl.remove(), 300);
@@ -292,4 +294,5 @@ $pageTitle = "Journal";
     });
   </script>
 </body>
+
 </html>

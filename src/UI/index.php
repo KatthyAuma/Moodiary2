@@ -25,6 +25,7 @@ $pageTitle = "Sign Up";
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+  <img src="../../images/moodiarylogo.png" alt="Moodiary Logo" class="main-logo" style="display:block;margin:0 auto 20px auto;max-width:120px;" />
   <div class="screen auth-container">
     <div class="logo">
       <h1>Moodiary</h1>
@@ -55,8 +56,8 @@ $pageTitle = "Sign Up";
       <a href="signin.php">Sign in</a>
     </div>
     
-    <img src="../images/Catchingup.png" class="bottom-left-img" alt="Moodiary Logo" />
-    <img src="../images/Loving.png" class="right-image" alt="Hugging character" />
+    <img src="../../images/Catchingup.png" class="bottom-left-img" alt="Moodiary Logo" />
+    <img src="../../images/Loving.png" class="right-image" alt="Hugging character" />
   </div>
 
   <script>

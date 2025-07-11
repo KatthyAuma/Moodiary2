@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         showLoading();
         
-        const response = await fetch('../Database&Backend/login.php', {
+        const response = await fetch('../Database&Backend/login.html', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

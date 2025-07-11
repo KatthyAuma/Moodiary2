@@ -23,9 +23,11 @@
       <a href="clients.php">My Clients</a>
     </div>
     <?php endif; ?>
+    <?php if (basename($_SERVER['PHP_SELF']) !== 'home.php'): ?>
     <div class="sidebar-item">
       <a href="settings.php">Settings</a>
     </div>
+    <?php endif; ?>
     <div class="sidebar-item" id="logout-btn">Logout</div>
   </div>
 
@@ -33,5 +35,30 @@
 
   <script src="sidebar.js"></script>
   <script src="dashboard.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          fetch('../Database&Backend/logout.php', {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              window.location.href = 'signin.php';
+            }
+          })
+          .catch(error => {
+            console.error('Logout error:', error);
+            window.location.href = 'signin.php';
+          });
+        });
+      }
+    });
+  </script>
 </body>
 </html> 

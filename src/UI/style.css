@@ -1069,6 +1069,7 @@ input:focus, textarea:focus, select:focus {
 
 .bottom-left-img {
   position: fixed;
+  z-index: 10 !important;
   bottom: 0;
   left: 0;
   width: 200px;
@@ -1078,6 +1079,7 @@ input:focus, textarea:focus, select:focus {
 
 .right-image {
   position: fixed;
+  z-index: 10 !important;
   top: 50%;
   right: 0;
   transform: translateY(-50%);
