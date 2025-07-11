@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS users (
     bio TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    last_login TIMESTAMP NULL
+    last_login TIMESTAMP NULL,
+    status ENUM('active', 'disabled', 'pending') DEFAULT 'active'
 );
 
 -- Roles table
@@ -131,35 +132,64 @@ CREATE TABLE IF NOT EXISTS messages (
     FOREIGN KEY (reply_to_journal_id) REFERENCES journal_entries(entry_id) ON DELETE SET NULL
 );
 
--- User activity log
+-- Activity logs table for tracking user activity
 CREATE TABLE IF NOT EXISTS activity_logs (
     log_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     activity_type VARCHAR(50) NOT NULL,
-    description TEXT,
+    related_id INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Therapist/Psychologist profiles
-CREATE TABLE IF NOT EXISTS professional_profiles (
-    profile_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL UNIQUE,
-    license_number VARCHAR(100),
-    specialization TEXT,
-    education TEXT,
-    years_experience INT,
-    is_verified BOOLEAN DEFAULT FALSE,
-    verified_at TIMESTAMP NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+-- Mentor-Mentee relationships
+CREATE TABLE IF NOT EXISTS mentor_mentee (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    mentor_id INT NOT NULL,
+    mentee_id INT NOT NULL,
+    notes TEXT,
+    needs_attention BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (mentor_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (mentee_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_mentor_mentee (mentor_id, mentee_id)
+);
+
+-- Counsellor-Client relationships
+CREATE TABLE IF NOT EXISTS counsellor_client (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    counsellor_id INT NOT NULL,
+    client_id INT NOT NULL,
+    notes TEXT,
+    priority BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (counsellor_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (client_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_counsellor_client (counsellor_id, client_id)
+);
+
+-- Counselling sessions
+CREATE TABLE IF NOT EXISTS counselling_sessions (
+    session_id INT AUTO_INCREMENT PRIMARY KEY,
+    counsellor_id INT NOT NULL,
+    client_id INT NOT NULL,
+    session_date DATETIME NOT NULL,
+    session_type VARCHAR(50) NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (counsellor_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (client_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- Insert default roles
 INSERT INTO roles (role_name, description) VALUES 
-('admin', 'System administrator with full access'),
-('user', 'Regular user'),
-('psychologist', 'Mental health professional'),
-('moderator', 'Community moderator');
+('admin', 'Administrator with full access to all features'),
+('user', 'Regular user with standard access'),
+('mentor', 'Mentor who can guide other users'),
+('counsellor', 'Professional counsellor who can provide mental health support');
 
 -- Insert default mood options
 INSERT INTO moods (mood_name, emoji, description) VALUES 
@@ -187,29 +217,23 @@ INSERT INTO recommendations (category_id, mood_id, title, content) VALUES
 (2, 1, 'Activities for Happy Mood', 'Dance party\nCall a friend\nTry a new recipe\nGo for a walk in nature'),
 
 -- Sad mood recommendations
-(1, 2, 'Comforting Music', 'Frank Ocean - "Ivy"\nPhoebe Bridgers - "Funeral"\nAdele - "Someone Like You"'),
-(2, 2, 'Activities for Sad Mood', 'Journal your feelings\nTake a warm bath\nWatch a comforting movie\nReach out to a supportive friend'),
+(1, 2, 'Comforting Music', 'Adele - "Someone Like You"\nColdplay - "Fix You"\nSam Smith - "Stay With Me"'),
+(2, 2, 'Activities for Sad Mood', 'Journal your feelings\nTake a warm bath\nWatch a comforting movie\nPractice self-compassion'),
 
 -- Angry mood recommendations
-(1, 3, 'Calming Music', 'Bon Iver - "Skinny Love"\nFleetwood Mac - "Landslide"\nSigur Rós - "Hoppípolla"'),
-(2, 3, 'Activities for Angry Mood', 'Deep breathing exercises\nGo for a run\nWrite a letter (but don''t send it)\nPractice mindfulness meditation'),
+(1, 3, 'Calming Music', 'Enya - "Caribbean Blue"\nBon Iver - "Skinny Love"\nYo-Yo Ma - "Bach: Cello Suite No. 1"'),
+(2, 3, 'Activities for Angry Mood', 'Deep breathing exercises\nGo for a run\nWrite a letter (don''t send it)\nTalk to someone you trust'),
 
 -- Anxious mood recommendations
-(1, 4, 'Soothing Music', 'Brian Eno - "Ambient 1: Music for Airports"\nYoYo Ma - "Bach: Cello Suites"\nMax Richter - "Sleep"'),
-(3, 4, 'Meditation for Anxiety', '4-7-8 Breathing Technique\nBody Scan Meditation\nGuided Visualization\nProgressive Muscle Relaxation'),
+(1, 4, 'Soothing Music', 'Brian Eno - "Ambient 1: Music for Airports"\nMax Richter - "Sleep"\nYanni - "Nightingale"'),
+(2, 4, 'Activities for Anxious Mood', 'Practice 4-7-8 breathing\nProgressive muscle relaxation\nMindfulness meditation\nGo for a walk outside');
 
--- Calm mood recommendations
-(1, 5, 'Peaceful Music', 'Nils Frahm - "Says"\nOlafur Arnalds - "Near Light"\nJóhann Jóhannsson - "Flight from the City"'),
-(4, 5, 'Reading for Calm Moments', '"The Alchemist" by Paulo Coelho\n"Siddhartha" by Hermann Hesse\n"Walden" by Henry David Thoreau'),
+-- Create an admin user (password: admin123)
+INSERT INTO users (email, password, username, full_name) VALUES
+('admin@moodiary.com', '$2y$10$5vkMWXr6rV5Gr.Zk2XUZxOUEZXNKF5K2lS4M.xD5YhQIm2Kp0HbEa', 'admin', 'System Administrator');
 
--- Excited mood recommendations
-(1, 6, 'Energetic Music', 'Queen - "Don''t Stop Me Now"\nAvicii - "Wake Me Up"\nDaft Punk - "Get Lucky"'),
-(5, 6, 'Channel Your Energy', 'Try a new workout routine\nStart a creative project\nPlan your next adventure\nLearn a new skill'),
-
--- Tired mood recommendations
-(1, 7, 'Gentle Music', 'Explosions in the Sky - "Your Hand in Mine"\nIron & Wine - "Flightless Bird, American Mouth"\nThe Album Leaf - "The Light"'),
-(2, 7, 'Activities for Tired Days', 'Take a power nap (20 minutes)\nLight stretching\nMake a nutritious snack\nTake a short walk in fresh air'),
-
--- Grateful mood recommendations
-(1, 8, 'Reflective Music', 'Louis Armstrong - "What a Wonderful World"\nIsrael Kamakawiwo''ole - "Somewhere Over the Rainbow"\nColdplay - "Fix You"'),
-(2, 8, 'Gratitude Activities', 'Write in a gratitude journal\nSend a thank you note\nPractice mindful appreciation\nVolunteer your time');
+-- Assign admin role
+INSERT INTO user_roles (user_id, role_id)
+SELECT 
+    (SELECT user_id FROM users WHERE username = 'admin'),
+    (SELECT role_id FROM roles WHERE role_name = 'admin');

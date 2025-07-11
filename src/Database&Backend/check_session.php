@@ -35,10 +35,14 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in']) && $_SESSION['l
             throw new Exception("Database connection failed");
         }
         
-        // Get user information
-        $stmt = $conn->prepare("SELECT user_id, email, username, full_name, profile_image 
-                               FROM users 
-                               WHERE user_id = :user_id");
+        // Get user information including roles
+        $stmt = $conn->prepare("SELECT u.user_id, u.email, u.username, u.full_name, u.profile_image,
+                               GROUP_CONCAT(r.role_name) as roles
+                               FROM users u
+                               LEFT JOIN user_roles ur ON u.user_id = ur.user_id
+                               LEFT JOIN roles r ON ur.role_id = r.role_id
+                               WHERE u.user_id = :user_id
+                               GROUP BY u.user_id");
         $stmt->bindParam(':user_id', $_SESSION['user_id']);
         $stmt->execute();
         
@@ -56,6 +60,12 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in']) && $_SESSION['l
                 // Update session time
                 $_SESSION['login_time'] = time();
                 
+                // Parse roles
+                $roles = $user['roles'] ? explode(',', $user['roles']) : [];
+                
+                // Update session with roles
+                $_SESSION['roles'] = $roles;
+                
                 // Set success response
                 $response['status'] = 'success';
                 $response['logged_in'] = true;
@@ -64,12 +74,14 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in']) && $_SESSION['l
                 $response['full_name'] = $user['full_name'];
                 $response['email'] = $user['email'];
                 $response['profile_image'] = $user['profile_image'] ?: 'default.png';
+                $response['roles'] = $roles;
                 $response['user'] = [
                     'user_id' => $user['user_id'],
                     'email' => $user['email'],
                     'username' => $user['username'],
                     'full_name' => $user['full_name'],
-                    'profile_image' => $user['profile_image'] ?: 'default.png'
+                    'profile_image' => $user['profile_image'] ?: 'default.png',
+                    'roles' => $roles
                 ];
                 $response['message'] = 'User is logged in';
             }

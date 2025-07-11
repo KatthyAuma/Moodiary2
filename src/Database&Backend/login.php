@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Set success response
         $response['status'] = 'success';
         $response['message'] = 'Login successful!';
-        $response['redirect'] = '../UI/home.html';
+        $response['redirect'] = '../UI/home.php';
         $response['user'] = $user;
         
     } catch (Exception $e) {

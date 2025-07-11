@@ -101,7 +101,13 @@ function getFriendsList($conn, $userId) {
     $stmt = $conn->prepare("
         SELECT 
             u.user_id, u.username, u.full_name, u.profile_image, u.last_login,
-            f.relationship_type,
+            CASE
+                WHEN f.user_id = :user_id AND f.relationship_type = 'mentor' THEN 'mentee'
+                WHEN f.user_id = :user_id AND f.relationship_type = 'counsellor' THEN 'client'
+                WHEN f.friend_id = :user_id AND f.relationship_type = 'mentor' THEN 'mentor'
+                WHEN f.friend_id = :user_id AND f.relationship_type = 'counsellor' THEN 'counsellor'
+                ELSE f.relationship_type
+            END as relationship_type,
             (
                 SELECT m.mood_name
                 FROM journal_entries je
@@ -341,6 +347,31 @@ function sendFriendRequest($conn, $userId, $friendId, $relationshipType) {
         exit;
     }
     
+    // Validate relationship type
+    if (!in_array($relationshipType, ['friend', 'mentor', 'counsellor', 'family'])) {
+        $relationshipType = 'friend'; // Default to friend if invalid
+    }
+    
+    // For mentor/counsellor relationships, check if user has appropriate role
+    if ($relationshipType === 'mentor' || $relationshipType === 'counsellor') {
+        // Check if the friend has the appropriate role
+        $stmt = $conn->prepare("
+            SELECT COUNT(*) FROM user_roles ur
+            JOIN roles r ON ur.role_id = r.role_id
+            WHERE ur.user_id = :friend_id AND r.role_name = :role_name
+        ");
+        $stmt->bindParam(':friend_id', $friendId);
+        $stmt->bindParam(':role_name', $relationshipType);
+        $stmt->execute();
+        
+        if ($stmt->fetchColumn() == 0) {
+            // The friend doesn't have the required role
+            $response['message'] = "This user is not a " . ucfirst($relationshipType) . ".";
+            echo json_encode($response);
+            exit;
+        }
+    }
+    
     // Create new friend request
     $stmt = $conn->prepare("
         INSERT INTO friendships (user_id, friend_id, relationship_type, status) 
@@ -393,46 +424,106 @@ function acceptFriendRequest($conn, $userId, $friendId, $relationshipType) {
         exit;
     }
     
-    // Update relationship type if provided
-    if ($relationshipType && $relationshipType !== $friendRequest['relationship_type']) {
+    // Start transaction
+    $conn->beginTransaction();
+    
+    try {
+        // Update relationship type if provided
+        if ($relationshipType && $relationshipType !== $friendRequest['relationship_type']) {
+            $stmt = $conn->prepare("
+                UPDATE friendships 
+                SET relationship_type = :relationship_type 
+                WHERE user_id = :friend_id AND friend_id = :user_id
+            ");
+            $stmt->bindParam(':relationship_type', $relationshipType);
+            $stmt->bindParam(':user_id', $userId);
+            $stmt->bindParam(':friend_id', $friendId);
+            $stmt->execute();
+        } else {
+            // Use the relationship type from the request
+            $relationshipType = $friendRequest['relationship_type'];
+        }
+        
+        // Accept friend request
         $stmt = $conn->prepare("
             UPDATE friendships 
-            SET relationship_type = :relationship_type 
+            SET status = 'accepted', updated_at = NOW() 
             WHERE user_id = :friend_id AND friend_id = :user_id
         ");
-        $stmt->bindParam(':relationship_type', $relationshipType);
         $stmt->bindParam(':user_id', $userId);
         $stmt->bindParam(':friend_id', $friendId);
         $stmt->execute();
+        
+        // Handle special relationship types
+        if ($relationshipType === 'mentor') {
+            // Check if the entry already exists in mentor_mentee table
+            $stmt = $conn->prepare("
+                SELECT COUNT(*) FROM mentor_mentee 
+                WHERE mentor_id = :mentor_id AND mentee_id = :mentee_id
+            ");
+            $stmt->bindParam(':mentor_id', $friendId); // Friend is the mentor
+            $stmt->bindParam(':mentee_id', $userId); // User is the mentee
+            $stmt->execute();
+            
+            if ($stmt->fetchColumn() == 0) {
+                // Insert into mentor_mentee table
+                $stmt = $conn->prepare("
+                    INSERT INTO mentor_mentee (mentor_id, mentee_id, created_at) 
+                    VALUES (:mentor_id, :mentee_id, NOW())
+                ");
+                $stmt->bindParam(':mentor_id', $friendId);
+                $stmt->bindParam(':mentee_id', $userId);
+                $stmt->execute();
+            }
+        } else if ($relationshipType === 'counsellor') {
+            // Check if the entry already exists in counsellor_client table
+            $stmt = $conn->prepare("
+                SELECT COUNT(*) FROM counsellor_client 
+                WHERE counsellor_id = :counsellor_id AND client_id = :client_id
+            ");
+            $stmt->bindParam(':counsellor_id', $friendId); // Friend is the counsellor
+            $stmt->bindParam(':client_id', $userId); // User is the client
+            $stmt->execute();
+            
+            if ($stmt->fetchColumn() == 0) {
+                // Insert into counsellor_client table
+                $stmt = $conn->prepare("
+                    INSERT INTO counsellor_client (counsellor_id, client_id, created_at) 
+                    VALUES (:counsellor_id, :client_id, NOW())
+                ");
+                $stmt->bindParam(':counsellor_id', $friendId);
+                $stmt->bindParam(':client_id', $userId);
+                $stmt->execute();
+            }
+        }
+        
+        // Log the activity
+        $activityType = 'friend_request_accepted';
+        $description = 'Accepted friend request';
+        $stmt = $conn->prepare("
+            INSERT INTO activity_logs (user_id, activity_type, description) 
+            VALUES (:user_id, :activity_type, :description)
+        ");
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->bindParam(':activity_type', $activityType);
+        $stmt->bindParam(':description', $description);
+        $stmt->execute();
+        
+        // Commit transaction
+        $conn->commit();
+        
+        $response['status'] = 'success';
+        $response['message'] = 'Friend request accepted.';
+        
+        echo json_encode($response);
+        exit;
+    } catch (Exception $e) {
+        // Roll back transaction on error
+        $conn->rollBack();
+        $response['message'] = 'Error: ' . $e->getMessage();
+        echo json_encode($response);
+        exit;
     }
-    
-    // Accept friend request
-    $stmt = $conn->prepare("
-        UPDATE friendships 
-        SET status = 'accepted', updated_at = NOW() 
-        WHERE user_id = :friend_id AND friend_id = :user_id
-    ");
-    $stmt->bindParam(':user_id', $userId);
-    $stmt->bindParam(':friend_id', $friendId);
-    $stmt->execute();
-    
-    // Log the activity
-    $activityType = 'friend_request_accepted';
-    $description = 'Accepted friend request';
-    $stmt = $conn->prepare("
-        INSERT INTO activity_logs (user_id, activity_type, description) 
-        VALUES (:user_id, :activity_type, :description)
-    ");
-    $stmt->bindParam(':user_id', $userId);
-    $stmt->bindParam(':activity_type', $activityType);
-    $stmt->bindParam(':description', $description);
-    $stmt->execute();
-    
-    $response['status'] = 'success';
-    $response['message'] = 'Friend request accepted.';
-    
-    echo json_encode($response);
-    exit;
 }
 
 /**

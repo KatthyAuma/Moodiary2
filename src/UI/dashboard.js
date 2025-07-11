@@ -3,34 +3,53 @@
  * Handles all dynamic functionality for the home/dashboard page
  */
 
+// Global variables
+let currentUser = null;
+let currentMood = null;
+let isAdmin = false;
+let isMentor = false;
+let isCounsellor = false;
+
+// Document ready
 document.addEventListener('DOMContentLoaded', function() {
-  // Check if user is logged in via PHP session
-  checkSession()
-    .then(isLoggedIn => {
-      if (!isLoggedIn) {
-        // Redirect to login page if not logged in
-        window.location.href = 'index.html';
-        return;
-      }
-      
-      // Initialize dashboard components
-      initUserProfile();
-      initQuickJournal();
-      initFriendsList();
-      initFriendRequests();
-      initFriendSearch();
-      initFeedContent();
-      initRecommendations();
-      initMoodTrends(); // Initialize mood trends
-    })
-    .catch(error => {
-      console.error('Error checking session:', error);
-      // Redirect to login page on error
-      window.location.href = 'index.html';
-    });
+  // Check session
+  checkSession();
   
-  // Set up tab functionality
+  // Initialize UI components
+  initMenuButton();
+  initSectionTabs();
+  
+  // Initialize dashboard components
+  initUserProfile();
+  initQuickJournal();
+  initFriendsList();
+  initFriendRequests();
+  initFriendSearch();
+  initFeedContent();
+  initRecommendations();
+  initMoodTrends();
+  
+  // Initialize role-specific features
+  initRoleSpecificFeatures();
+  
+  // Add CSS for quick-list
+  addQuickListStyles();
+});
+
+/**
+ * Initialize menu button functionality
+ * Note: This is now handled by sidebar.js
+ */
+function initMenuButton() {
+  // Sidebar functionality is now handled by sidebar.js
+}
+
+/**
+ * Initialize section tabs functionality
+ */
+function initSectionTabs() {
   const tabs = document.querySelectorAll('.section-tab');
+  
   tabs.forEach(tab => {
     tab.addEventListener('click', function() {
       // Remove active class from all tabs
@@ -48,31 +67,38 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById(tabId).classList.add('active');
     });
   });
-});
+}
 
 /**
  * Check if user is logged in via PHP session
  */
 function checkSession() {
-  return fetch('../Database&Backend/check_session.php')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
+  fetch('../Database&Backend/check_session.php')
+    .then(response => response.json())
     .then(data => {
-      console.log('Session check response:', data);
       if (data.logged_in) {
-        // Store user data in session storage for convenience
-        sessionStorage.setItem('user_id', data.user_id);
-        sessionStorage.setItem('username', data.username);
-        sessionStorage.setItem('full_name', data.full_name);
-        sessionStorage.setItem('email', data.email);
-        sessionStorage.setItem('profile_image', data.profile_image);
-        return true;
+        currentUser = data.user;
+        
+        // Set role variables
+        if (data.roles && Array.isArray(data.roles)) {
+          isAdmin = data.roles.includes('admin');
+          isMentor = data.roles.includes('mentor');
+          isCounsellor = data.roles.includes('counsellor');
+          
+          console.log('User roles:', data.roles);
+          console.log('isAdmin:', isAdmin, 'isMentor:', isMentor, 'isCounsellor:', isCounsellor);
+        }
+        
+        // Continue with initialization
+      } else {
+        // Redirect to login page if not logged in
+        window.location.href = 'signin.php';
       }
-      return false;
+    })
+    .catch(error => {
+      console.error('Error checking session:', error);
+      // Redirect to login page on error
+      window.location.href = 'signin.php';
     });
 }
 
@@ -1058,7 +1084,7 @@ function performFriendSearch(searchTerm) {
         const friendUsername = messageBtn.dataset.username;
         
         messageBtn.addEventListener('click', function() {
-          window.location.href = `message.html?user=${friendUsername || friendId}`;
+          window.location.href = `message.php?user=${friendUsername || friendId}`;
         });
       }
     });
@@ -1119,7 +1145,7 @@ function createSearchResultCard(user) {
   let actionBtn;
   switch (user.friendship_status) {
     case 'friend':
-      actionBtn = `<a href="message.html?user=${user.username || user.user_id}" class="btn-primary">Message</a>`;
+      actionBtn = `<a href="message.php?user=${user.username || user.user_id}" class="btn-primary">Message</a>`;
       break;
     case 'pending':
       actionBtn = `<button class="btn-disabled" disabled>Request Sent</button>`;
@@ -1131,15 +1157,7 @@ function createSearchResultCard(user) {
       `;
       break;
     default:
-      actionBtn = `
-        <button class="btn-add-friend" data-user-id="${user.user_id}">Add Friend</button>
-        <select class="relationship-type">
-          <option value="friend">Friend</option>
-          <option value="mentor">Mentor</option>
-          <option value="counsellor">Counsellor</option>
-          <option value="family">Family</option>
-        </select>
-      `;
+      actionBtn = `<button class="btn-add-friend" data-user-id="${user.user_id}">Add Friend</button>`;
   }
   
   // Create avatar element
@@ -1165,10 +1183,9 @@ function createSearchResultCard(user) {
   // Add event listeners for action buttons
   if (user.friendship_status === 'none') {
     const addFriendBtn = userCard.querySelector('.btn-add-friend');
-    const relationshipSelect = userCard.querySelector('.relationship-type');
     
     addFriendBtn.addEventListener('click', function() {
-      const relationshipType = relationshipSelect.value;
+      const relationshipType = 'friend';
       sendFriendRequest(user.user_id, relationshipType)
         .then(response => {
           if (response.status === 'success') {
@@ -1198,7 +1215,7 @@ function createSearchResultCard(user) {
             
             // Update UI to show friend status
             const userActions = userCard.querySelector('.search-result-actions');
-            userActions.innerHTML = `<a href="message.html?user=${user.username || user.user_id}" class="btn-primary">Message</a>`;
+            userActions.innerHTML = `<a href="message.php?user=${user.username || user.user_id}" class="btn-primary">Message</a>`;
             
             // Refresh friends list
             initFriendsList();
@@ -1220,19 +1237,10 @@ function createSearchResultCard(user) {
             
             // Update UI to show add friend button
             const userActions = userCard.querySelector('.search-result-actions');
-            userActions.innerHTML = `
-              <button class="btn-add-friend" data-user-id="${user.user_id}">Add Friend</button>
-              <select class="relationship-type">
-                <option value="friend">Friend</option>
-                <option value="mentor">Mentor</option>
-                <option value="counsellor">Counsellor</option>
-                <option value="family">Family</option>
-              </select>
-            `;
+            userActions.innerHTML = `<button class="btn-add-friend" data-user-id="${user.user_id}">Add Friend</button>`;
             
             // Re-initialize event listener for add friend button
             const addFriendBtn = userActions.querySelector('.btn-add-friend');
-            const relationshipSelect = userActions.querySelector('.relationship-type');
             
             addFriendBtn.addEventListener('click', function() {
               const relationshipType = relationshipSelect.value;
@@ -1607,7 +1615,7 @@ function createFeedItem(entry) {
     const entryMood = entry.mood_name;
     const entryEmoji = entry.emoji;
     // Pass reply_to_id in the URL
-    window.location.href = `message.html?user=${userId}&reply_to_id=${entryId}&entry_content=${encodeURIComponent(entryContent)}&entry_mood=${encodeURIComponent(entryMood)}&entry_emoji=${encodeURIComponent(entryEmoji)}`;
+    window.location.href = `message.php?user=${userId}&reply_to_id=${entryId}&entry_content=${encodeURIComponent(entryContent)}&entry_mood=${encodeURIComponent(entryMood)}&entry_emoji=${encodeURIComponent(entryEmoji)}`;
   });
   
   return feedItem;
@@ -1870,4 +1878,162 @@ function initMoodTrends() {
         </div>
       `;
     });
+} 
+
+/**
+ * Initialize role-specific features
+ */
+function initRoleSpecificFeatures() {
+  // Load role-specific data
+  loadRoleSpecificData();
+}
+
+/**
+ * Load data specific to user roles
+ */
+function loadRoleSpecificData() {
+  // Check if mentor section exists
+  const mentorSection = document.getElementById('mentees-needing-attention');
+  if (mentorSection) {
+    loadMentorData();
+  }
+  
+  // Check if counsellor section exists
+  const priorityClientsSection = document.getElementById('priority-clients');
+  const upcomingSessionsSection = document.getElementById('upcoming-sessions');
+  if (priorityClientsSection && upcomingSessionsSection) {
+    loadCounsellorData();
+  }
+}
+
+/**
+ * Load mentor data
+ */
+function loadMentorData() {
+  const menteeSection = document.getElementById('mentees-needing-attention');
+  
+  fetch('../Database&Backend/mentor_api.php?action=get_mentees')
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success' && data.mentees) {
+        // Filter mentees needing attention
+        const needAttention = data.mentees.filter(mentee => mentee.needs_attention);
+        
+        if (needAttention.length > 0) {
+          let html = '<h4>Mentees Needing Attention</h4><ul class="quick-list">';
+          
+          needAttention.forEach(mentee => {
+            html += `<li><a href="mentees.php?id=${mentee.user_id}">${mentee.full_name || mentee.username}</a></li>`;
+          });
+          
+          html += '</ul>';
+          menteeSection.innerHTML = html;
+        } else {
+          menteeSection.innerHTML = '<p>No mentees currently need attention</p>';
+        }
+      } else {
+        menteeSection.innerHTML = '<p>Error loading mentee data</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching mentor data:', error);
+      menteeSection.innerHTML = '<p>Error loading mentee data</p>';
+    });
+}
+
+/**
+ * Load counsellor data
+ */
+function loadCounsellorData() {
+  const prioritySection = document.getElementById('priority-clients');
+  const sessionsSection = document.getElementById('upcoming-sessions');
+  
+  // Load priority clients
+  fetch('../Database&Backend/counsellor_api.php?action=get_clients')
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success' && data.clients) {
+        // Filter priority clients
+        const priorityClients = data.clients.filter(client => client.priority);
+        
+        if (priorityClients.length > 0) {
+          let html = '<h4>Priority Clients</h4><ul class="quick-list">';
+          
+          priorityClients.forEach(client => {
+            html += `<li><a href="clients.php?id=${client.user_id}">${client.full_name || client.username}</a></li>`;
+          });
+          
+          html += '</ul>';
+          prioritySection.innerHTML = html;
+        } else {
+          prioritySection.innerHTML = '<p>No priority clients at this time</p>';
+        }
+        
+        // Filter clients with upcoming sessions
+        const upcomingSessions = data.clients.filter(client => client.upcoming_session);
+        
+        if (upcomingSessions.length > 0) {
+          let html = '<h4>Today\'s Sessions</h4><ul class="quick-list">';
+          
+          upcomingSessions.forEach(client => {
+            html += `<li><a href="clients.php?id=${client.user_id}">${client.full_name || client.username}</a></li>`;
+          });
+          
+          html += '</ul>';
+          sessionsSection.innerHTML = html;
+        } else {
+          sessionsSection.innerHTML = '<p>No sessions scheduled for today</p>';
+        }
+      } else {
+        prioritySection.innerHTML = '<p>Error loading client data</p>';
+        sessionsSection.innerHTML = '<p>Error loading session data</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching counsellor data:', error);
+      prioritySection.innerHTML = '<p>Error loading client data</p>';
+      sessionsSection.innerHTML = '<p>Error loading session data</p>';
+    });
+}
+
+/**
+ * Add CSS styles for quick-list
+ */
+function addQuickListStyles() {
+  const style = document.createElement('style');
+  style.textContent = `
+    .quick-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0;
+    }
+    
+    .quick-list li {
+      padding: 4px 0;
+      border-bottom: 1px solid #e0d0d0;
+      font-size: 0.9rem;
+    }
+    
+    .quick-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .quick-list a {
+      color: #c48484;
+      text-decoration: none;
+    }
+    
+    .quick-list a:hover {
+      text-decoration: underline;
+    }
+    
+    .admin-quick-actions h4,
+    .mentor-quick-actions h4,
+    .counsellor-quick-actions h4 {
+      margin: 16px 0 4px 0;
+      font-size: 0.9rem;
+      color: #333;
+    }
+  `;
+  document.head.appendChild(style);
 } 

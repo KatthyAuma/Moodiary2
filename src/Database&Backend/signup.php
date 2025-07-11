@@ -101,35 +101,63 @@ try {
     // Hash password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    // Insert new user
-    $stmt = $conn->prepare('INSERT INTO users (username, email, password, full_name, created_at) VALUES (:username, :email, :password, :full_name, NOW())');
-    $stmt->bindParam(':username', $username);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':password', $hashedPassword);
-    $stmt->bindParam(':full_name', $fullName);
-    $stmt->execute();
+    // Begin transaction
+    $conn->beginTransaction();
 
-    $userId = $conn->lastInsertId();
+    try {
+        // Insert new user
+        $stmt = $conn->prepare('INSERT INTO users (username, email, password, full_name, created_at) VALUES (:username, :email, :password, :full_name, NOW())');
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $hashedPassword);
+        $stmt->bindParam(':full_name', $fullName);
+        $stmt->execute();
 
-    // Set session variables
-    $_SESSION['user_id'] = $userId;
-    $_SESSION['username'] = $username;
-    $_SESSION['full_name'] = $fullName;
-    $_SESSION['email'] = $email;
-    $_SESSION['logged_in'] = true;
-    $_SESSION['login_time'] = time();
+        $userId = $conn->lastInsertId();
 
-    // Return success response
-    $response['status'] = 'success';
-    $response['message'] = 'Account created successfully';
-    $response['data'] = [
-        'user_id' => $userId,
-        'username' => $username,
-        'full_name' => $fullName,
-        'email' => $email
-    ];
-    echo json_encode($response);
-    exit;
+        // Assign default 'user' role
+        $stmt = $conn->prepare('SELECT role_id FROM roles WHERE role_name = :role_name');
+        $roleName = 'user';
+        $stmt->bindParam(':role_name', $roleName);
+        $stmt->execute();
+        $roleId = $stmt->fetchColumn();
+
+        if ($roleId) {
+            $stmt = $conn->prepare('INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)');
+            $stmt->bindParam(':user_id', $userId);
+            $stmt->bindParam(':role_id', $roleId);
+            $stmt->execute();
+        }
+
+        // Commit transaction
+        $conn->commit();
+
+        // Set session variables
+        $_SESSION['user_id'] = $userId;
+        $_SESSION['username'] = $username;
+        $_SESSION['full_name'] = $fullName;
+        $_SESSION['email'] = $email;
+        $_SESSION['logged_in'] = true;
+        $_SESSION['login_time'] = time();
+        $_SESSION['roles'] = ['user']; // Set default role in session
+
+        // Return success response
+        $response['status'] = 'success';
+        $response['message'] = 'Account created successfully';
+        $response['data'] = [
+            'user_id' => $userId,
+            'username' => $username,
+            'full_name' => $fullName,
+            'email' => $email,
+            'roles' => ['user']
+        ];
+        echo json_encode($response);
+        exit;
+    } catch (Exception $e) {
+        // Roll back transaction on error
+        $conn->rollBack();
+        throw $e;
+    }
 
 } catch (Exception $e) {
     $response['message'] = 'Signup failed: ' . $e->getMessage();

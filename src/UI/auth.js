@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.status === 'success') {
           showNotification(data.message, 'success');
           setTimeout(() => {
-            window.location.href = data.redirect || 'signin.html';
+            window.location.href = data.redirect || 'signin.php';
           }, 1500);
         } else {
           showNotification(data.message || 'Registration failed. Please try again.');
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.status === 'success') {
           showNotification(data.message, 'success');
           setTimeout(() => {
-            window.location.href = data.redirect || 'home.html';
+            window.location.href = data.redirect || 'home.php';
           }, 1000);
         } else {
           showNotification(data.message || 'Login failed. Please try again.');
@@ -162,14 +162,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Protect Pages
-  const protectedPages = ["home.html", "journal.html", "message.html"];
-  const currentPage = window.location.pathname.split('/').pop();
+  const protectedPages = ["home", "journal", "message", "admin", "mentees", "clients"];
+  const currentPage = window.location.pathname.split('/').pop().split('.')[0]; // Remove file extension
   
   if (protectedPages.some(page => currentPage.includes(page))) {
     (async () => {
       const isLoggedIn = await checkSession();
       if (!isLoggedIn) {
-        window.location.href = "signin.html";
+        window.location.href = "signin.php";
       }
     })();
   }
@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.status === 'success') {
           showNotification(data.message, 'success');
           setTimeout(() => {
-            window.location.href = data.redirect || 'signin.html';
+            window.location.href = data.redirect || 'signin.php';
           }, 1000);
         } else {
           showNotification(data.message);

@@ -1,3 +1,10 @@
+<?php
+// Include the header
+include_once('../Database&Backend/header.php');
+
+// Set page title
+$pageTitle = "Messages";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -377,13 +384,13 @@
     
     <div class="sidebar" id="sidebar">
       <div class="sidebar-item">
-        <a href="home.html">Home</a>
+        <a href="home.php">Home</a>
       </div>
       <div class="sidebar-item active">
-        <a href="message.html">Messages</a>
+        <a href="message.php">Messages</a>
       </div>
       <div class="sidebar-item">
-        <a href="journal.html">Journal</a>
+        <a href="journal.php">Journal</a>
       </div>
       <div class="sidebar-item" id="logout-btn">Logout</div>
     </div>
@@ -453,7 +460,7 @@
         // Find friends button
         if (findFriendsBtn) {
           findFriendsBtn.addEventListener('click', function() {
-            window.location.href = 'home.html';
+            window.location.href = 'home.php';
           });
         }
         
@@ -651,7 +658,7 @@
                 const findFriendsEmpty = document.getElementById('find-friends-empty');
                 if (findFriendsEmpty) {
                   findFriendsEmpty.addEventListener('click', function() {
-                    window.location.href = 'home.html';
+                    window.location.href = 'home.php';
                   });
                 }
               }
